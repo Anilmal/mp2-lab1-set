@@ -37,17 +37,24 @@ int TSet::GetMaxPower(void) const // получить макс. к-во эл-т�
 
 int TSet::IsMember(const int Elem) const // элемент множества?
 {
-    return BitField.GetBit(Elem);
+	if (BitField.GetBit(Elem))
+		return 1;
+	else
+		return 0;
 }
 
 void TSet::InsElem(const int Elem) // включение элемента множества
 {
-	BitField.SetBit(Elem);
+	if (Elem >= 0 && Elem < MaxPower)
+		BitField.SetBit(Elem);
+	else throw "Ошибка";
 }
 
 void TSet::DelElem(const int Elem) // исключение элемента множества
 {
-	BitField.ClrBit(Elem);
+	if (Elem >= 0 && Elem < MaxPower)
+		BitField.ClrBit(Elem);
+	else throw "Ошибка";
 }
 
 // теоретико-множественные операции
@@ -56,6 +63,7 @@ TSet& TSet::operator=(const TSet &s) // присваивание
 {
 	BitField = s.BitField;
 	MaxPower = s.MaxPower;
+	return *this;
 }
 
 int TSet::operator==(const TSet &s) const // сравнение
@@ -68,7 +76,7 @@ int TSet::operator==(const TSet &s) const // сравнение
 		    return 0;
 	}
 	else
-    return 0;
+      return 0;
 }
 
 int TSet::operator!=(const TSet &s) const // сравнение
@@ -88,15 +96,14 @@ int TSet::operator!=(const TSet &s) const // сравнение
 
 TSet TSet::operator+(const TSet &s) // объединение
 {
-	TSet tmp(0);
+	TSet tmp(MaxPower>s.MaxPower ? MaxPower : s.MaxPower);
 	tmp.BitField = BitField | s.BitField;
-	tmp.MaxPower = tmp.BitField.GetLength();
 	return tmp;
 }
 
 TSet TSet::operator+(const int Elem) // объединение с элементом
 {
-	if (Elem < 0 || Elem > MaxPower)
+	if (Elem < 0 || Elem >= MaxPower)
 		throw("Ошибка");
 	else
 	{
@@ -109,7 +116,7 @@ TSet TSet::operator+(const int Elem) // объединение с элемент
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
 
-	if (Elem < 0 || Elem > MaxPower)
+	if (Elem < 0 || Elem >= MaxPower)
 		throw("Ошибка");
 	else
 	{
@@ -137,9 +144,11 @@ TSet TSet::operator~(void) // дополнение
 istream &operator>>(istream &istr, TSet &s) // ввод
 {
 	istr >> s.BitField;
+	return istr;
 }
 
 ostream& operator<<(ostream &ostr, const TSet &s) // вывод
 {
 	ostr << s.BitField;
+	return ostr;
 }
